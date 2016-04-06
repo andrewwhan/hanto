@@ -57,6 +57,12 @@ public class HantoGameBoard {
 		board.put(boardPos, pieceToPlace);
 	}
 	
+	/**
+	 * Moves the piece at the given location to the given destination on the game board
+	 * This function assumes that it has been given a valid move
+	 * @param from - The location of the piece to move
+	 * @param to - The destination of the piece
+	 */
 	public void movePiece(HantoCoordinate from, HantoCoordinate to)
 	{
 		HantoPiece pieceToMove = board.get(from);
@@ -132,15 +138,16 @@ public class HantoGameBoard {
 		}
 	}
 	
+	/**
+	 * Checks to see if the pieces on the game board are in a contiguous formation
+	 * @return - True if pieces are in contiguous formation, false otherwise
+	 */
 	public boolean isContiguousFormation()
 	{
 		Set<HantoCoordinate> occupiedPositions = board.keySet();
 		HantoCoordinate[] occupiedPositionsArray = new HantoCoordinate[occupiedPositions.size()];
 		occupiedPositions.toArray(occupiedPositionsArray);
 		Set<HantoCoordinate> connectedPositions = visitAdjacent(new HashSet<HantoCoordinate>(), occupiedPositionsArray[0]);
-		
-		System.out.println(occupiedPositions.size());
-		System.out.println(connectedPositions.size());
 		
 		if (connectedPositions.size() == occupiedPositions.size())
 		{

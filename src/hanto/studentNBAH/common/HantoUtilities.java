@@ -58,6 +58,12 @@ public class HantoUtilities {
 		return adjacentPositions;
 	}
 
+	/**
+	 * Calculates the distance between the two given coordinates
+	 * @param from - Coordinate 1
+	 * @param to - Coordinate 2
+	 * @return - The distance between the two coordinates
+	 */
 	public static int getDistance(HantoCoordinate from, HantoCoordinate to){
 		int normX = to.getX() - from.getX(); 
 		int normY = to.getY() - from.getY();

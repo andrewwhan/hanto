@@ -57,8 +57,8 @@ public class GammaHantoMasterTest {
 	}
 	
 	private static HantoGameFactory factory;
-	private HantoGame blueGame;
-	private HantoGame redGame;
+	private HantoGame blueFirstGame;
+	private HantoGame redFirstGame;
 	
 	@BeforeClass
 	public static void initializeClass()
@@ -69,37 +69,42 @@ public class GammaHantoMasterTest {
 	@Before
 	public void setup()
 	{
-		// By default, blue moves first.
-		blueGame = factory.makeHantoGame(HantoGameID.GAMMA_HANTO, BLUE);
-		redGame = factory.makeHantoGame(HantoGameID.GAMMA_HANTO, RED);
+		blueFirstGame = factory.makeHantoGame(HantoGameID.GAMMA_HANTO, BLUE);
+		redFirstGame = factory.makeHantoGame(HantoGameID.GAMMA_HANTO, RED);
 	}
 	
-	@Test	// 1
+	@Test // 1
+	public void getPrintableBoard()
+	{
+		assertEquals("The board", blueFirstGame.getPrintableBoard());
+	}
+	
+	@Test	// 2
 	public void bluePlacesInitialButterflyAtOrigin() throws HantoException
 	{
-		final MoveResult mr = blueGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		final MoveResult mr = blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
 		assertEquals(OK, mr);
-		final HantoPiece p = blueGame.getPieceAt(makeCoordinate(0, 0));
+		final HantoPiece p = blueFirstGame.getPieceAt(makeCoordinate(0, 0));
 		assertEquals(BLUE, p.getColor());
 		assertEquals(BUTTERFLY, p.getType());
 	}
 	
-	@Test // 2
+	@Test // 3
 	public void redPlacesInitialButterflyAtOrigin() throws HantoException
 	{
-		final MoveResult mr = redGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		final MoveResult mr = redFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
 		assertEquals(OK, mr);
-		final HantoPiece p = redGame.getPieceAt(makeCoordinate(0, 0));
+		final HantoPiece p = redFirstGame.getPieceAt(makeCoordinate(0, 0));
 		assertEquals(RED, p.getColor());
 		assertEquals(BUTTERFLY, p.getType());
 	}
 	
-	@Test // 3
+	@Test // 4
 	public void bluePlacesInitialPieceOutsideOrigin() throws HantoException
 	{
 		try
 		{
-			final MoveResult mr = blueGame.makeMove(SPARROW, null, makeCoordinate(1, 0));
+			final MoveResult mr = blueFirstGame.makeMove(SPARROW, null, makeCoordinate(1, 0));
 			
 			// If no exception is caught, then the test has failed
 			assertTrue(false);
@@ -110,25 +115,26 @@ public class GammaHantoMasterTest {
 		}
 	}
 	
-	@Test // 4
+	@Test // 5
 	public void redPlacesInitialPieceAdjacentToBluePiece() throws HantoException
 	{
-		final MoveResult blueMove = blueGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
-		final MoveResult redMove = blueGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+		final MoveResult blueMove = blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		final MoveResult redMove = blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
 		assertEquals(redMove, MoveResult.OK);
-		final HantoPiece p = blueGame.getPieceAt(makeCoordinate(1, 0));
+		final HantoPiece p = blueFirstGame.getPieceAt(makeCoordinate(1, 0));
 		assertEquals(RED, p.getColor());
 		assertEquals(BUTTERFLY, p.getType());
 	}
 	
-	@Test // 5
+	@Test // 6
 	public void bluePlacesPieceAdjacentToRedPiece() throws HantoException
 	{
 		try
 		{
-			blueGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
-			blueGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
-			blueGame.makeMove(SPARROW, null, makeCoordinate(0, 1));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(0, 1));
+			assertTrue(false);
 		}
 		catch (HantoException e)
 		{
@@ -136,16 +142,73 @@ public class GammaHantoMasterTest {
 		}
 	}
 	
-	@Test // 6
+	@Test // 7
+	public void bluePlacesTooManyButterflies() throws HantoException
+	{
+		try
+		{
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(-1, 1));
+			assertTrue(false);
+		}
+		catch (HantoException e)
+		{
+			assertEquals("Maximum pieces of that type has been reached", e.getMessage());
+		}
+	}
+	
+	@Test (expected = HantoException.class) // 8
+	public void placePieceAtOccupiedPosition() throws HantoException
+	{
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+	}
+	
+	@Test // 9
 	public void blueWalksFirstPiece() throws HantoException
 	{
-		blueGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
-		blueGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
-		final MoveResult mr = blueGame.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(0, 1));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+		final MoveResult mr = blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(0, 1));
 		assertEquals(MoveResult.OK, mr);
 	}
 	
-	@Test // 7
+	@Test // 10
+	public void movePieceDoesNotMatchType() throws HantoException
+	{
+		try
+		{
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+			blueFirstGame.makeMove(SPARROW, makeCoordinate(0,0), makeCoordinate(1, -1));
+			assertTrue(false);
+		}
+		catch(HantoException e)
+		{
+			assertEquals("Given piece type does not match the piece at the from location on the board", e.getMessage());
+		}
+	}
+	
+	@Test (expected = HantoException.class) // 11
+	public void movePieceToOccupied() throws HantoException
+	{
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+		blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(1, 0));
+	}
+	
+	@Test (expected = HantoException.class) // 12
+	public void movePieceFartherThan1Hex() throws HantoException
+	{
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-1, 1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(1, -2));
+		blueFirstGame.makeMove(SPARROW, makeCoordinate(-1, 1), makeCoordinate(1, 0));
+	}
+	
+	@Test // 13
 	public void distanceCalculatorTest()
 	{
 		assertEquals(1, HantoUtilities.getDistance(makeCoordinate(0,0), makeCoordinate(1,-1)));
@@ -156,19 +219,129 @@ public class GammaHantoMasterTest {
 		assertEquals(1, HantoUtilities.getDistance(makeCoordinate(0,0), makeCoordinate(-1, 1)));
 	}
 	
-	@Test // 8
+	@Test (expected = HantoException.class) // 14
+	public void movePieceThatCannotSlide() throws HantoException
+	{
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(0, 1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(2, -1));
+		blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(1, 0));
+	}
+	
+	@Test // 15
 	public void walkingBreaksContiguity() throws HantoException
 	{
 		try
 		{
-			blueGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
-			blueGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
-			final MoveResult mr = blueGame.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(-1, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+			final MoveResult mr = blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(-1, 0));
 			assertTrue(false);
 		}
 		catch(HantoException e)
 		{
 			assertEquals("Invalid move", e.getMessage());
+		}
+	}
+	
+	@Test // 16
+	public void surroundRedButterfly() throws HantoException
+	{
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(0, 1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(2, -1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-1, 0));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(1, -2));
+		blueFirstGame.makeMove(SPARROW, makeCoordinate(-1, 0), makeCoordinate(0, -1));
+		blueFirstGame.makeMove(SPARROW, null, makeCoordinate(2, -2));
+		MoveResult mr = blueFirstGame.makeMove(SPARROW, makeCoordinate(0, 1), makeCoordinate(1, 0));
+		assertEquals(MoveResult.BLUE_WINS, mr);
+	}
+	
+	@Test // 17
+	public void surroundBlueButterfly() throws HantoException
+	{
+		redFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+		redFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+		redFirstGame.makeMove(SPARROW, null, makeCoordinate(0, 1));
+		redFirstGame.makeMove(SPARROW, null, makeCoordinate(2, -1));
+		redFirstGame.makeMove(SPARROW, null, makeCoordinate(-1, 0));
+		redFirstGame.makeMove(SPARROW, null, makeCoordinate(1, -2));
+		redFirstGame.makeMove(SPARROW, makeCoordinate(-1, 0), makeCoordinate(0, -1));
+		redFirstGame.makeMove(SPARROW, null, makeCoordinate(2, -2));
+		MoveResult mr = redFirstGame.makeMove(SPARROW, makeCoordinate(0, 1), makeCoordinate(1, 0));
+		assertEquals(MoveResult.RED_WINS, mr);
+	}
+	
+	@Test // 18
+	public void blueFailsToPlaceButterflyByFourthTurn() throws HantoException
+	{
+		try
+		{
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-1, 1));
+			blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(1, -1), makeCoordinate(1, 0));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-2, 2));
+			blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(1, 0), makeCoordinate(1, -1));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-3, 3));
+			assertTrue(false);
+		}
+		catch(HantoException e)
+		{
+			assertEquals("Player needs to place butterfly by turn 4", e.getMessage());
+		}
+	}
+	
+	@Test // 19
+	public void makeMoveAfterGameOver() throws HantoException
+	{
+		int turnCount = 4;
+		try
+		{
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(1, -1));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-1, 1));
+			
+			for (int i = 0; i < 10; i++)
+			{
+				blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(1, -1), makeCoordinate(0, -1));
+				turnCount++;
+				
+				blueFirstGame.makeMove(SPARROW, makeCoordinate(-1, 1), makeCoordinate(0, 1));
+				turnCount++;
+				
+				blueFirstGame.makeMove(BUTTERFLY, makeCoordinate(0, -1), makeCoordinate(1, -1));
+				turnCount++;
+				
+				blueFirstGame.makeMove(SPARROW, makeCoordinate(0, 1), makeCoordinate(-1, 1));
+				turnCount++;
+			}
+			assertTrue(false);
+		}
+		catch(HantoException e)
+		{
+			assertEquals("You cannot move after the game is finished", e.getMessage());
+			assertEquals(41, turnCount);
+		}
+	}
+	
+	@Test // 20
+	public void attemptingWalkBeforePlacingButterfly() throws HantoException
+	{
+		try
+		{
+			blueFirstGame.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(1, -1));
+			blueFirstGame.makeMove(SPARROW, null, makeCoordinate(-1, 1));
+			blueFirstGame.makeMove(SPARROW, makeCoordinate(1, -1), makeCoordinate(1, 0));
+			assertTrue(false);
+		}
+		catch (HantoException e)
+		{
+			assertEquals("Player must place butterfly before moving existing pieces", e.getMessage());
 		}
 	}
 	

@@ -133,7 +133,7 @@ public class BetaHantoGame implements HantoGame
 	}
 
 	private boolean isValidPlacement(HantoCoordinate placementPos)
-	{	
+	{
 		Set<HantoCoordinate> occupiedPositions = gameBoard.getListOfPiecePositions();
 		
 		if (occupiedPositions.size() == 0 && placementPos.equals(new HantoCoordinateImpl(0, 0)))
