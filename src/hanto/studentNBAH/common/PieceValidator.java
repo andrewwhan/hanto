@@ -30,4 +30,12 @@ public interface PieceValidator {
 	 * @return - True if it is a valid move, false otherwise
 	 */
 	boolean canMove(HantoCoordinate from, HantoCoordinate to, HantoGameBoard board);
+	
+	/**
+	 * Checks all of the piece's validators to see if it has a valid move
+	 * @param from - The location of the piece to move
+	 * @param board - The current board of the game
+	 * @return - True if the piece has a valid move, false otherwise
+	 */
+	boolean hasValidMove(HantoCoordinate from, HantoGameBoard board);
 }

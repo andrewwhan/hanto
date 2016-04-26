@@ -12,6 +12,8 @@ package hanto.studentNBAH;
 
 import hanto.common.*;
 import hanto.studentNBAH.beta.BetaHantoGame;
+import hanto.studentNBAH.delta.DeltaHantoGame;
+import hanto.studentNBAH.epsilon.EpsilonHantoGame;
 import hanto.studentNBAH.gamma.GammaHantoGame;
 
 /**
@@ -66,6 +68,12 @@ public class HantoGameFactory
 				break;
 			case GAMMA_HANTO:
 				game = new GammaHantoGame(movesFirst);
+				break;
+			case DELTA_HANTO:
+				game = new DeltaHantoGame(movesFirst);
+				break;
+			case EPSILON_HANTO:
+				game = new EpsilonHantoGame(movesFirst);
 				break;
 		}
 		return game;

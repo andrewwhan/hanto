@@ -14,18 +14,8 @@ package hanto.studentNBAH.beta;
 
 import static hanto.common.HantoPieceType.BUTTERFLY;
 import static hanto.common.HantoPieceType.SPARROW;
-import static hanto.common.HantoPlayerColor.BLUE;
-import static hanto.common.HantoPlayerColor.RED;
-
-import java.util.HashMap;
-import java.util.Set;
-
 import hanto.common.*;
 import hanto.studentNBAH.common.BaseHantoGame;
-import hanto.studentNBAH.common.HantoCoordinateImpl;
-import hanto.studentNBAH.common.HantoGameBoard;
-import hanto.studentNBAH.common.HantoPieceImpl;
-import hanto.studentNBAH.common.HantoUtilities;
 
 /**
  * <<Fill this in>>
@@ -36,10 +26,14 @@ public class BetaHantoGame extends BaseHantoGame
 	
 	public BetaHantoGame(HantoPlayerColor firstPlayer){
 		super(firstPlayer, 12);
+		currentGameID = HantoGameID.BETA_HANTO;
 		pieceMax.put(BUTTERFLY, 1);
 		pieceMax.put(SPARROW, 5);
 	}
 	
+	/**
+	 * Returns true because we don't care about placing next to opponents in Beta
+	 */
 	@Override
 	protected boolean checkAdjacentOpponentRule(HantoCoordinate placementPos, HantoCoordinate occupiedPos)
 	{
@@ -50,5 +44,13 @@ public class BetaHantoGame extends BaseHantoGame
 	protected boolean isValidMove(HantoCoordinate from, HantoCoordinate to, HantoPieceType pieceType) throws HantoException
 	{
 		throw new HantoException("Pieces can't move in beta Hanto");
+	}
+	
+	/**
+	 * Returns false because resignation is not supported in Beta
+	 */
+	protected boolean checkForResignation(HantoPieceType pieceType, HantoCoordinate source,
+			HantoCoordinate destination){
+		return false;
 	}
 }

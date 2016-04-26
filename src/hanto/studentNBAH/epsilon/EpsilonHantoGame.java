@@ -10,43 +10,54 @@
  * Copyright ©2016 Gary F. Pollice
  *******************************************************************************/
 
-package hanto.studentNBAH.gamma;
+package hanto.studentNBAH.epsilon;
 
 import static hanto.common.HantoPieceType.BUTTERFLY;
+import static hanto.common.HantoPieceType.CRAB;
 import static hanto.common.HantoPieceType.SPARROW;
+
 import hanto.common.HantoCoordinate;
+
+import static hanto.common.HantoPieceType.HORSE;
+
 import hanto.common.HantoGameID;
 import hanto.common.HantoPieceType;
 import hanto.common.HantoPlayerColor;
+import hanto.common.HantoPrematureResignationException;
 import hanto.studentNBAH.common.BaseHantoGame;
 
 /**
- * Gamma Hanto game version
- * Has all functionality of Beta Hanto, with the addition of walking
- * Can no longer place pieces next to opponent pieces
- * Game now goes to turn 20 (40 moves total)
+ * Epsilon Hanto Game Version
+ * Implement jumping pieces
+ * Players can no longer resign if they still have valid moves
  * @author Nathan Bryant, Andrew Han
  *
  */
-public class GammaHantoGame extends BaseHantoGame{
+public class EpsilonHantoGame extends BaseHantoGame {
 
-	/**
-	 * Constructor
-	 * @param movesFirst - The color of the player that will make the first move
-	 */
-	public GammaHantoGame(HantoPlayerColor movesFirst){
-		super(movesFirst, 40);
-		currentGameID = HantoGameID.GAMMA_HANTO;
+	public EpsilonHantoGame(HantoPlayerColor firstPlayer) {
+		super(firstPlayer);
+		currentGameID = HantoGameID.EPSILON_HANTO;
 		pieceMax.put(BUTTERFLY, 1);
-		pieceMax.put(SPARROW, 5);
-		firstPlayer = movesFirst;
+		pieceMax.put(SPARROW, 2);
+		pieceMax.put(CRAB, 6);
+		pieceMax.put(HORSE, 4);
 	}
 	
-	/**
-	 * Returns false because resignation is not supported in Gamma
-	 */
+	@Override
 	protected boolean checkForResignation(HantoPieceType pieceType, HantoCoordinate source,
-			HantoCoordinate destination){
+			HantoCoordinate destination) throws HantoPrematureResignationException
+	{
+		if(pieceType == null && source == null && destination == null)
+		{
+			if (validMoveExists())
+			{
+				throw new HantoPrematureResignationException();
+			}
+			
+			return true;
+		}
+		
 		return false;
 	}
 }

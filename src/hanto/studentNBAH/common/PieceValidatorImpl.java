@@ -47,4 +47,18 @@ public class PieceValidatorImpl implements PieceValidator {
 		return false;
 	}
 
+	@Override
+	public boolean hasValidMove(HantoCoordinate from, HantoGameBoard board)
+	{
+		Set<HantoCoordinate> adjEmptyCoords = board.getAllAdjacentEmptyCoords();
+		for (HantoCoordinate coord : adjEmptyCoords)
+		{
+			for(MoveValidatorStrategy mvs:validators){
+				if(mvs.canMove(from, coord, board)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

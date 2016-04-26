@@ -29,6 +29,18 @@ public class HantoGameBoard {
 
 	private Map<HantoCoordinate, HantoPiece> board = new HashMap<HantoCoordinate, HantoPiece>();
 	
+	public HantoGameBoard() {
+		
+	}
+	
+	/**
+	 * Copy constructor for HantoGameBoards
+	 * @param source - The source object to copy from
+	 */
+	public HantoGameBoard(HantoGameBoard source){
+		board = new HashMap<HantoCoordinate, HantoPiece>(source.board);
+	}
+
 	/**
 	 * Returns the HantoPiece that is at the given coordinate on the board
 	 * @param boardPos - The position to grab the piece from
@@ -170,5 +182,34 @@ public class HantoGameBoard {
 		}
 		
 		return visited;
+	}
+	
+	/**
+	 * Returns all spaces on the board that are empty and adjacent to other pieces
+	 * @return A Set of spaces that are empty and adjacent to pieces
+	 */
+	public Set<HantoCoordinate> getAllAdjacentEmptyCoords()
+	{
+		Set<HantoCoordinate> piecePositions = getListOfPiecePositions();
+		Set<HantoCoordinate> adjacentEmptyPositions = new HashSet<HantoCoordinate>();
+		
+		if (piecePositions.size() == 0)
+		{
+			adjacentEmptyPositions.add(new HantoCoordinateImpl(0, 0));
+			return adjacentEmptyPositions;
+		}
+		
+		for (HantoCoordinate coord : piecePositions)
+		{
+			Set<HantoCoordinate> adjacentPositions = HantoUtilities.getAdjacentPositions(coord);
+			for (HantoCoordinate adjCoord : adjacentPositions)
+			{
+				if (getPieceAt(adjCoord) == null)
+				{
+					adjacentEmptyPositions.add(adjCoord);
+				}
+			}
+		}
+		return adjacentEmptyPositions;
 	}
 }

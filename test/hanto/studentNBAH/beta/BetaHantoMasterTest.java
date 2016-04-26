@@ -222,6 +222,24 @@ public class BetaHantoMasterTest
 		}
 	}
 	
+	@Test //11
+	public void piecesCantMoveInBeta() throws HantoException
+	{
+		try
+		{
+			game.makeMove(BUTTERFLY, null, makeCoordinate(0, 0));
+			game.makeMove(BUTTERFLY, null, makeCoordinate(1, 0));
+			game.makeMove(BUTTERFLY, makeCoordinate(0, 0), makeCoordinate(1, -1));
+
+			// If no exception is caught, then the test has failed
+			assertTrue(false);
+		}
+		catch (HantoException e)
+		{
+			assertEquals("Pieces can't move in beta Hanto", e.getMessage());
+		}
+	}
+	
 	// Helper methods
 	private HantoCoordinate makeCoordinate(int x, int y)
 	{

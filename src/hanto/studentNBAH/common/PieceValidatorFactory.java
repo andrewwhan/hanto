@@ -54,6 +54,12 @@ private static final PieceValidatorFactory instance = new PieceValidatorFactory(
 			case GAMMA_HANTO:
 				newImpl = new PieceValidatorImpl(gammaFactory(type));
 				break;
+			case DELTA_HANTO:
+				newImpl = new PieceValidatorImpl(deltaFactory(type));
+				break;
+			case EPSILON_HANTO:
+				newImpl = new PieceValidatorImpl(epsilonFactory(type));
+				break;
 			default:
 				break;
 		}
@@ -69,6 +75,47 @@ private static final PieceValidatorFactory instance = new PieceValidatorFactory(
 				break;
 			case SPARROW:
 				validators.add(new WalkValidator());
+				break;
+			default:
+				break;
+		}
+		return validators;
+	}
+	
+	private Set<MoveValidatorStrategy> deltaFactory(HantoPieceType type){
+		Set<MoveValidatorStrategy> validators = new HashSet<MoveValidatorStrategy>();
+		switch(type){
+			case BUTTERFLY:
+				validators.add(new WalkValidator());
+				break;
+			case SPARROW:
+				validators.add(new FlyValidator());
+				break;
+			case CRAB:
+				validators.add(new WalkValidator(3));
+				break;
+			default:
+				break;
+		}
+		return validators;
+	}
+	
+	private Set<MoveValidatorStrategy> epsilonFactory(HantoPieceType type){
+		Set<MoveValidatorStrategy> validators = new HashSet<MoveValidatorStrategy>();
+		switch(type){
+			case BUTTERFLY:
+				validators.add(new WalkValidator());
+				break;
+			case SPARROW:
+				validators.add(new FlyValidator(4));
+				break;
+			case CRAB:
+				validators.add(new WalkValidator(1));
+				break;
+			case HORSE:
+				validators.add(new JumpValidator());
+				break;
+			default:
 				break;
 		}
 		return validators;

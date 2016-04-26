@@ -12,6 +12,8 @@
 
 package hanto.studentNBAH.common;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import hanto.common.HantoCoordinate;
@@ -23,43 +25,29 @@ import hanto.common.HantoCoordinate;
  */
 public class WalkValidator implements MoveValidatorStrategy{
 	
+	int maxWalkDistance;
 	
+	public WalkValidator() {
+		maxWalkDistance = 1;
+	}
+	
+	/**
+	 * Creates a walk validator with the specified maximum walking distance
+	 * @param maxWalkDistance - The max distance a piece with this walk validator can walk
+	 */
+	public WalkValidator(int maxWalkDistance) {
+		this.maxWalkDistance = maxWalkDistance;
+	}
+
 	@Override
 	public boolean canMove(HantoCoordinate from, HantoCoordinate to, HantoGameBoard board) {
-		
 		if (board.getPieceAt(to) != null)
 		{
 			return false;
 		}
-		
-		if (HantoUtilities.getDistance(from, to) != 1)
-		{
-			return false;
-		}
-		
-		if (!canSlideToDest(from, to, board))
-		{
-			return false;
-		}
-		
-		// Fake moving the piece to check for contiguity after the move
-		board.movePiece(from, to);
-		
-		boolean isContiguous;
-		
-		if (board.isContiguousFormation())
-		{
-			isContiguous = true;
-		}
-		else 
-		{
-			isContiguous = false;
-		}
-		
-		// Move the piece back to its original location before exiting
-		board.movePiece(to, from);
-		
-		return isContiguous;
+	
+		List<HantoCoordinate> currentPath = new LinkedList<HantoCoordinate>();
+		return findPath(from, to, new HantoGameBoard(board), currentPath);
 	}
 
 	/**
@@ -71,6 +59,10 @@ public class WalkValidator implements MoveValidatorStrategy{
 	 */
 	private boolean canSlideToDest(HantoCoordinate from, HantoCoordinate to, HantoGameBoard board)
 	{
+		if (board.getPieceAt(to) != null)
+		{
+			return false;
+		}
 		Set<HantoCoordinate> fromAdjacencies = HantoUtilities.getAdjacentPositions(from);
 		Set<HantoCoordinate> toAdjacencies = HantoUtilities.getAdjacentPositions(to);
 		fromAdjacencies.retainAll(toAdjacencies);
@@ -83,6 +75,50 @@ public class WalkValidator implements MoveValidatorStrategy{
 			}
 		}
 		
+		return false;
+	}
+	
+	private boolean findPath(HantoCoordinate from, HantoCoordinate to, HantoGameBoard board,
+			List<HantoCoordinate> path)
+	{
+		if(from.equals(to)){
+			path.add(to);
+			return true;
+		}
+		if(path.contains(from)){
+			return false;
+		}
+		if(path.size() >= maxWalkDistance){
+			return false;
+		}
+		if (HantoUtilities.getDistance(from, to) + path.size() > maxWalkDistance)
+		{
+			return false;
+		}
+		path.add(from);
+		Set<HantoCoordinate> fromAdjacencies = HantoUtilities.getAdjacentPositions(from);
+		for(HantoCoordinate coord:fromAdjacencies){
+			if(canSlideToDest(from, coord, board)){
+				
+				// Fake moving the piece to check for contiguity after the move
+				board.movePiece(from, coord);
+				
+				if (!board.isContiguousFormation())
+				{
+					board.movePiece(coord, from);
+					continue;
+				}
+				
+				// Move the piece back to its original location before exiting				
+				
+				if(findPath(coord, to, board, path)){
+					board.movePiece(coord, from);
+					return true;
+				}
+				board.movePiece(coord, from);
+			}
+		}
+		path.remove(from);
 		return false;
 	}
 }

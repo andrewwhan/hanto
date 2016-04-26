@@ -10,43 +10,34 @@
  * Copyright ©2016 Gary F. Pollice
  *******************************************************************************/
 
-package hanto.studentNBAH.gamma;
+package hanto.studentNBAH.delta;
 
 import static hanto.common.HantoPieceType.BUTTERFLY;
 import static hanto.common.HantoPieceType.SPARROW;
-import hanto.common.HantoCoordinate;
+
 import hanto.common.HantoGameID;
-import hanto.common.HantoPieceType;
+
+import static hanto.common.HantoPieceType.CRAB;
+
 import hanto.common.HantoPlayerColor;
 import hanto.studentNBAH.common.BaseHantoGame;
 
 /**
- * Gamma Hanto game version
- * Has all functionality of Beta Hanto, with the addition of walking
- * Can no longer place pieces next to opponent pieces
- * Game now goes to turn 20 (40 moves total)
+ * Delta Hanto game version
+ * Has all functionality of Gamma Hanto, with the addition of flying
+ * Game now has no max turn limit
+ * Players can now resign
  * @author Nathan Bryant, Andrew Han
  *
  */
-public class GammaHantoGame extends BaseHantoGame{
+public class DeltaHantoGame extends BaseHantoGame {
 
-	/**
-	 * Constructor
-	 * @param movesFirst - The color of the player that will make the first move
-	 */
-	public GammaHantoGame(HantoPlayerColor movesFirst){
-		super(movesFirst, 40);
-		currentGameID = HantoGameID.GAMMA_HANTO;
+	public DeltaHantoGame(HantoPlayerColor firstPlayer) {
+		super(firstPlayer);
+		currentGameID = HantoGameID.DELTA_HANTO;
 		pieceMax.put(BUTTERFLY, 1);
-		pieceMax.put(SPARROW, 5);
-		firstPlayer = movesFirst;
+		pieceMax.put(SPARROW, 4);
+		pieceMax.put(CRAB, 4);
 	}
-	
-	/**
-	 * Returns false because resignation is not supported in Gamma
-	 */
-	protected boolean checkForResignation(HantoPieceType pieceType, HantoCoordinate source,
-			HantoCoordinate destination){
-		return false;
-	}
+
 }
