@@ -10,12 +10,15 @@
 
 package hanto.studentNBAH.tournament;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
 import hanto.common.*;
-import hanto.studentNBAH.common.HantoGameBoard;
-import hanto.studentNBAH.common.HantoPieceImpl;
 import hanto.studentNBAH.common.HantoUtilities;
 import hanto.studentNBAH.epsilon.EpsilonHantoGame;
 import hanto.tournament.*;
@@ -52,6 +55,7 @@ public class HantoPlayer implements HantoGamePlayer
 	@Override
 	public HantoMoveRecord makeMove(HantoMoveRecord opponentsMove)
 	{
+		HantoMoveRecord selectedMove;
 		// Register the previous opponent move in the game
 		if (opponentsMove != null)
 		{
@@ -59,21 +63,26 @@ public class HantoPlayer implements HantoGamePlayer
 				hantoGame.makeMove(opponentsMove.getPiece(), opponentsMove.getFrom(), opponentsMove.getTo());
 			}
 			catch (HantoException e) {
-				System.out.println("Failed to make opponent's move");
+				System.out.println("Failed to make opponent's move" + e.getMessage());
 				return null;
 			}
 		}
 		
 		Set<HantoMoveRecord> allPossibleMoves = hantoGame.getAllPossibleMoves();
-		
 		if (allPossibleMoves.size() == 0)
 		{
-			return new HantoMoveRecord(null, null, null);
+			selectedMove = new HantoMoveRecord(null, null, null);
 		}
 		else 
 		{
-			return chooseBestMove(allPossibleMoves);
+			selectedMove = chooseBestMove(allPossibleMoves);
 		}
+		try {
+			hantoGame.makeMove(selectedMove.getPiece(), selectedMove.getFrom(), selectedMove.getTo());
+		} catch (HantoException e) {
+			System.out.println("Failed to make move" + e.getMessage());
+		}
+		return selectedMove;
 	}
 
 	public void setCurrentGameState(EpsilonHantoGame currentGame)
@@ -94,31 +103,44 @@ public class HantoPlayer implements HantoGamePlayer
 		
 		for (HantoMoveRecord possibleMove : allPossibleMoves)
 		{
-			HantoGameBoard boardCopy = new HantoGameBoard(hantoGame.getPrintableBoard());
-			if (possibleMove.getFrom() == null)
-			{
-				boardCopy.placePiece(possibleMove.getTo(), new HantoPieceImpl(myColor, possibleMove.getPiece()));
-				if (!boardCopy.checkButterflySurrounded(myColor))
-				{
-					goodMoves.add(possibleMove);
-				}
+			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+			try {
+				ObjectOutputStream objOut = new ObjectOutputStream(byteStream);
+				objOut.writeObject(hantoGame);
+			} 
+			catch (IOException e) {
+				System.out.println("Serialization error " + e.getMessage());
+				continue;
 			}
-			else
-			{
-				boardCopy.movePiece(possibleMove.getFrom(), possibleMove.getTo());
-				if (!boardCopy.checkButterflySurrounded(myColor))
-				{
-					goodMoves.add(possibleMove);
+			boolean legalMove;
+			try {
+				hantoGame.makeMove(possibleMove.getPiece(), possibleMove.getFrom(), possibleMove.getTo());
+				legalMove = true;
+			} 
+			catch(HantoException e){
+				legalMove = false;
+			}
+			if(legalMove){
+				goodMoves.add(possibleMove);
+			}
+			
+			try {
+				ObjectInputStream objIn = new ObjectInputStream(new ByteArrayInputStream(byteStream.toByteArray()));
+				Object obj = objIn.readObject();
+				if(obj instanceof EpsilonHantoGame){
+					hantoGame = (EpsilonHantoGame) obj;
 				}
+			} catch (IOException | ClassNotFoundException e) {
+				System.out.println("Deserialization error");
 			}
 		}
-		
 		if (goodMoves.size() == 0)
 		{
-			goodMoves = allPossibleMoves;
+			return new HantoMoveRecord(null, null, null);
 		}
 		
 		int randomIndex = (int) Math.floor(Math.random() * (goodMoves.size() - 1));
+
 		return (HantoMoveRecord) goodMoves.toArray()[randomIndex];
 	}
 }

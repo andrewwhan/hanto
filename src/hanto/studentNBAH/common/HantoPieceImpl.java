@@ -10,6 +10,7 @@
 
 package hanto.studentNBAH.common;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import hanto.common.*;
@@ -18,7 +19,7 @@ import hanto.common.*;
  * Implementation of the HantoPiece.
  * @version Mar 2,2016
  */
-public class HantoPieceImpl implements HantoPiece
+public class HantoPieceImpl implements HantoPiece, Serializable
 {
 	private final HantoPlayerColor color;
 	private final HantoPieceType type;

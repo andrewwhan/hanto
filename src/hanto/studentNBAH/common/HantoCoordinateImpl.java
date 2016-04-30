@@ -12,13 +12,15 @@
 
 package hanto.studentNBAH.common;
 
+import java.io.Serializable;
+
 import hanto.common.HantoCoordinate;
 
 /**
  * The implementation for my version of Hanto.
  * @version Mar 2, 2016
  */
-public class HantoCoordinateImpl implements HantoCoordinate
+public class HantoCoordinateImpl implements HantoCoordinate, Serializable
 {
 	final private int x, y;
 	

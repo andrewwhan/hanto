@@ -12,6 +12,7 @@
 
 package hanto.studentNBAH.common;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ import hanto.common.*;
  * @author Nathan Bryant, Andrew Han
  *
  */
-public class HantoGameBoard {
+public class HantoGameBoard implements Serializable {
 
 	private Map<HantoCoordinate, HantoPiece> board = new HashMap<HantoCoordinate, HantoPiece>();
 	

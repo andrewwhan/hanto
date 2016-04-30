@@ -16,6 +16,7 @@ import static hanto.common.HantoPieceType.BUTTERFLY;
 import static hanto.common.HantoPlayerColor.BLUE;
 import static hanto.common.HantoPlayerColor.RED;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -37,8 +38,9 @@ import hanto.tournament.HantoMoveRecord;
  * @author Nathan Bryant, Andrew Han
  *
  */
-public abstract class BaseHantoGame implements HantoGame {
+public abstract class BaseHantoGame implements HantoGame, Serializable {
 
+	private static final long serialVersionUID = 1L;
 	protected HantoPlayerColor firstPlayer;
 	protected boolean gameOver = false;
 	protected int turnNumber = 1;
@@ -102,7 +104,7 @@ public abstract class BaseHantoGame implements HantoGame {
 			}
 		}
 
-		if(!checkButterflyPlacedInTimeRule())
+		if(!checkButterflyPlacedInTimeRule(pieceType))
 		{
 			throw new HantoException("Player needs to place butterfly by turn 4");
 		}
@@ -326,16 +328,17 @@ public abstract class BaseHantoGame implements HantoGame {
 
 	/**
 	 * Checks to see if the butterfly has been placed before the last turn to place the butterfly
+	 * @param pieceType 
 	 * @return - True if the player still has time to place butterfly or already placed it in time, false otherwise
 	 */
-	protected boolean checkButterflyPlacedInTimeRule()
+	protected boolean checkButterflyPlacedInTimeRule(HantoPieceType pieceType)
 	{
 		int latestMoveNumber = (latestButterflyTurn * 2) - 1;
 
 		HantoPlayerColor currentPlayer = getCurrentPlayerColor();
 		Set<HantoPiece> currentPlayerPieces = gameBoard.getPiecesOfPlayer(currentPlayer);
 		if((HantoUtilities.countPlayerPiecesOfType(currentPlayer, BUTTERFLY, currentPlayerPieces) == 0)
-				&& turnNumber >= latestMoveNumber){
+				&& turnNumber >= latestMoveNumber && pieceType != BUTTERFLY){
 			return false;
 		}
 

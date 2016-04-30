@@ -35,6 +35,8 @@ import hanto.studentNBAH.common.BaseHantoGame;
  */
 public class EpsilonHantoGame extends BaseHantoGame {
 
+	private static final long serialVersionUID = 1L;
+
 	public EpsilonHantoGame(HantoPlayerColor firstPlayer) {
 		super(firstPlayer);
 		currentGameID = HantoGameID.EPSILON_HANTO;
