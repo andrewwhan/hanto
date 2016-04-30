@@ -17,6 +17,7 @@ import static hanto.common.HantoPlayerColor.BLUE;
 import static hanto.common.HantoPlayerColor.RED;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import hanto.common.HantoPieceType;
 import hanto.common.HantoPlayerColor;
 import hanto.common.HantoPrematureResignationException;
 import hanto.common.MoveResult;
+import hanto.tournament.HantoMoveRecord;
 
 /**
  * Represents a HantoGame, using Template pattern.
@@ -79,7 +81,7 @@ public abstract class BaseHantoGame implements HantoGame {
 
 	@Override
 	public String getPrintableBoard() {
-		return "The board";
+		return gameBoard.toString();
 	}
 
 	@Override
@@ -403,5 +405,58 @@ public abstract class BaseHantoGame implements HantoGame {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Gets all of the possible piece placements that the current player has 
+	 * @param pieceType - The type of piece to place
+	 * @return - Set of all the possible piece placements for the given piece
+	 */
+	protected Set<HantoMoveRecord> getAllValidPlacements(HantoPieceType pieceType)
+	{
+		Set<HantoMoveRecord> allValidPlacements = new HashSet<HantoMoveRecord>();
+		
+		for (HantoCoordinate coord : gameBoard.getAllAdjacentEmptyCoords())
+		{
+			if (isValidPlacement(coord))
+			{
+				allValidPlacements.add(new HantoMoveRecord(pieceType, null, coord));
+			}
+		}
+		
+		return allValidPlacements;
+	}
+	
+	/**
+	 * Gets a set of all the possible moves that the current player has represented by HantoMoveRecord
+	 * @return - Set of all the possible moves
+	 */
+	public Set<HantoMoveRecord> getAllPossibleMoves()
+	{
+		HantoPlayerColor currentPlayer = getCurrentPlayerColor();
+		Set<HantoPiece> currentPlayerPieces = gameBoard.getPiecesOfPlayer(currentPlayer);
+		
+		Set<HantoMoveRecord> allPossibleMoves = new HashSet<HantoMoveRecord>();
+		
+		// Adds all the valid moves to the list of all possible moves
+		for(HantoPiece currentPiece : currentPlayerPieces)
+		{
+			PieceValidator currentPieceValidator = PieceValidatorFactory.getInstance()
+					.makePieceValidator(currentPiece.getType(), currentGameID);
+			allPossibleMoves.addAll(currentPieceValidator.getValidMoves(gameBoard.getPosByPiece(currentPiece), gameBoard));
+		}
+		
+		for (HantoPieceType pieceType : pieceMax.keySet())
+		{
+			int currentTypeMax = pieceMax.get(pieceType);
+			int currentTypeCount = HantoUtilities.countPlayerPiecesOfType(currentPlayer, pieceType, 
+					gameBoard.getPiecesOfPlayer(currentPlayer));
+			if (currentTypeCount < currentTypeMax)
+			{
+				allPossibleMoves.addAll(getAllValidPlacements(pieceType));
+			}
+		}
+		
+		return allPossibleMoves;
 	}
 }

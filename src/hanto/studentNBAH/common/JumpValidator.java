@@ -24,32 +24,31 @@ public class JumpValidator implements MoveValidatorStrategy {
 	@Override
 	public boolean canMove(HantoCoordinate from, HantoCoordinate to, HantoGameBoard board) {
 		HantoCoordinate jumpDirection = lineDirection(from, to);
+		
 		if(jumpDirection == null){
-			System.out.println("Not straight line");
 			return false;
 		}
+		
 		if (board.getPieceAt(to) != null)
 		{
-			System.out.println("Space not empty");
-
 			return false;
 		}
+		
 		if(HantoUtilities.getDistance(from, to) < 2){
 			return false;
 		}
-		System.out.println(jumpDirection.getX() + " , " + jumpDirection.getY());
+		
 		HantoCoordinate alongLine = new HantoCoordinateImpl(from.getX() + jumpDirection.getX(),
 				from.getY() + jumpDirection.getY());
+		
 		while(!alongLine.equals(to)){
-			System.out.println("loop");
+			
 			if(board.getPieceAt(alongLine) == null){
-				System.out.println("Gap in jump");
-
 				return false;
 			}
+			
 			alongLine = new HantoCoordinateImpl(alongLine.getX() + jumpDirection.getX(),
 					alongLine.getY() + jumpDirection.getY());
-
 		}
 		
 		// Fake moving the piece to check for contiguity after the move

@@ -12,7 +12,10 @@
 
 package hanto.studentNBAH.common;
 
+import java.util.Set;
+
 import hanto.common.HantoCoordinate;
+import hanto.tournament.HantoMoveRecord;
 
 /**
  * Interface for object that contains a particular piece's validators
@@ -38,4 +41,12 @@ public interface PieceValidator {
 	 * @return - True if the piece has a valid move, false otherwise
 	 */
 	boolean hasValidMove(HantoCoordinate from, HantoGameBoard board);
+	
+	/**
+	 * Gets a list of all the valid moves that the piece validator has
+	 * @param from - The coordinate that the piece is located at
+	 * @param board - The current game board
+	 * @return - The set of all valid moves for the piece
+	 */
+	Set<HantoMoveRecord> getValidMoves(HantoCoordinate from, HantoGameBoard board);
 }

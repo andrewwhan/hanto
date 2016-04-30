@@ -40,6 +40,35 @@ public class HantoGameBoard {
 	public HantoGameBoard(HantoGameBoard source){
 		board = new HashMap<HantoCoordinate, HantoPiece>(source.board);
 	}
+	
+	/**
+	 * Constructor that takes the string representation of a game board and creates a new game board from it
+	 * @param boardString - the string representation of a game board
+	 */
+	public HantoGameBoard(String boardString)
+	{
+		board = new HashMap<HantoCoordinate, HantoPiece>();
+		
+		if (boardString.equals(""))
+		{
+			return;
+		}
+		
+		String[] initialStrings = boardString.split("&");
+		for (String s : initialStrings)
+		{
+			if (s.equals(""))
+			{
+				continue;
+			}			
+			String[] split = s.split(";");		
+			int coordX = Integer.parseInt(split[0]);
+			int coordY = Integer.parseInt(split[1]);
+			HantoPieceType pieceType = HantoPieceType.valueOf(split[2]);
+			HantoPlayerColor playerColor = HantoPlayerColor.valueOf(split[3]);
+			board.put(new HantoCoordinateImpl(coordX, coordY), new HantoPieceImpl(playerColor, pieceType));
+		}
+	}
 
 	/**
 	 * Returns the HantoPiece that is at the given coordinate on the board
@@ -211,5 +240,20 @@ public class HantoGameBoard {
 			}
 		}
 		return adjacentEmptyPositions;
+	}
+	
+	@Override
+	public String toString()
+	{
+		String boardString = "";
+		Set<HantoCoordinate> piecePositions = getListOfPiecePositions();
+		for (HantoCoordinate coord : piecePositions)
+		{
+			boardString += "&";
+			boardString += coord.getX() + ";" + coord.getY();
+			boardString += ";" + getPieceAt(coord).getType().toString().toUpperCase();
+			boardString += ";" + getPieceAt(coord).getColor().toString().toUpperCase();
+		}
+		return boardString;
 	}
 }

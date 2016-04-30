@@ -12,9 +12,11 @@
 
 package hanto.studentNBAH.common;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import hanto.common.HantoCoordinate;
+import hanto.tournament.HantoMoveRecord;
 
 /**
  * Implementation of piece validator, checks to see if a piece can move by checking the given move with
@@ -60,5 +62,23 @@ public class PieceValidatorImpl implements PieceValidator {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public Set<HantoMoveRecord> getValidMoves(HantoCoordinate from, HantoGameBoard board)
+	{
+		Set<HantoMoveRecord> validMoves = new HashSet<HantoMoveRecord>();
+		
+		Set<HantoCoordinate> adjEmptyCoords = board.getAllAdjacentEmptyCoords();
+		for (HantoCoordinate coord : adjEmptyCoords)
+		{
+			for(MoveValidatorStrategy mvs:validators){
+				if(mvs.canMove(from, coord, board)){
+					validMoves.add(new HantoMoveRecord(board.getPieceAt(from).getType(), from, coord));
+				}
+			}
+		}
+		
+		return validMoves;
 	}
 }
